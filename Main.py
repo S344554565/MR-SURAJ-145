@@ -1,6 +1,11 @@
-from fbchat import Client
-from fbchat.models import *
-import time
+# main.py
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Hello"
 
 # =====  𝐌𝐑 𝐒𝐔𝐑𝐀𝐉=====
 EMAIL = "YOUR_EMAIL"
