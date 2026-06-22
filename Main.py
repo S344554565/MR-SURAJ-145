@@ -1,72 +1,60 @@
-# main.py
-from flask import Flask
+# requirements:
+# fbchat==1.9.7
 
-app = Flask(__name__)
+from fbchat import Client
+from fbchat.models import ThreadType
+import time
 
-@app.route('/')
-def home():
-    return "Hello"
+EMAIL = "your_email"
+PASSWORD = "your_password"
 
-# =====  𝐌𝐑 𝐒𝐔𝐑𝐀𝐉=====
-EMAIL = "YOUR_EMAIL"
-PASSWORD = "YOUR_PASSWORD"
+GROUP_ID = "YOUR_GROUP_ID"
 
-# ===== GROUP SETTINGS =====
-GROUP_ID = "GROUP_THREAD_ID"
+LOCKED_GROUP_NAME = "My Locked Group"
 
-LOCKED_GROUP_NAME = "MY LOCKED GROUP"
-
-# User nicknames lock
 LOCKED_NICKNAMES = {
-    "USER_ID_1": "OWNER",
-    "USER_ID_2": "ADMIN"
+    "USER_ID_1": "Admin",
+    "USER_ID_2": "Member"
 }
 
 
 class LockBot(Client):
 
     def onPeopleAdded(self, added_ids, author_id, thread_id, **kwargs):
-        pass
-
-    def onNicknameChange(self, author_id, changed_for, new_nickname,
-                         thread_id, thread_type, **kwargs):
-
-        if thread_id != GROUP_ID:
-            return
-
-        locked_name = LOCKED_NICKNAMES.get(changed_for)
-
-        if locked_name and new_nickname != locked_name:
-            print(f"Restoring nickname for {changed_for}")
-
-            self.changeNickname(
-                nickname=locked_name,
-                user_id=changed_for,
-                thread_id=thread_id,
-                thread_type=ThreadType.GROUP
-            )
-
-    def onTitleChange(self, author_id, new_title,
-                      thread_id, thread_type, **kwargs):
-
-        if thread_id != GROUP_ID:
-            return
-
-        if new_title != LOCKED_GROUP_NAME:
-            print("Restoring group name")
-
+        if thread_id == GROUP_ID:
             self.changeThreadTitle(
-                title=LOCKED_GROUP_NAME,
-                thread_id=thread_id,
+                LOCKED_GROUP_NAME,
+                thread_id=GROUP_ID,
                 thread_type=ThreadType.GROUP
             )
 
+    def check_lock(self):
+        while True:
+            try:
+                info = self.fetchThreadInfo(GROUP_ID)[GROUP_ID]
 
-while True:
-    try:
-        bot = LockBot(EMAIL, PASSWORD)
-        print("Bot Started")
-        bot.listen()
-    except Exception as e:
-        print(e)
-        time.sleep(10)
+                # Group name lock
+                if info.name != LOCKED_GROUP_NAME:
+                    self.changeThreadTitle(
+                        LOCKED_GROUP_NAME,
+                        thread_id=GROUP_ID,
+                        thread_type=ThreadType.GROUP
+                    )
+
+                # Nickname lock
+                for uid, nick in LOCKED_NICKNAMES.items():
+                    self.changeNickname(
+                        nick,
+                        uid,
+                        thread_id=GROUP_ID,
+                        thread_type=ThreadType.GROUP
+                    )
+
+            except Exception as e:
+                print("Error:", e)
+
+            time.sleep(30)
+
+
+bot = LockBot(EMAIL, PASSWORD)
+bot.check_lock()
