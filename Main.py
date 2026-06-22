@@ -1,5 +1,4 @@
-# requirements:
-# fbchat==1.9.7
+
 
 from fbchat import Client
 from fbchat.models import ThreadType
