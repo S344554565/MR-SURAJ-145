@@ -5,8 +5,8 @@ from fbchat import Client
 from fbchat.models import ThreadType
 import time
 
-EMAIL = "MR SURAJ"
-PASSWORD = "your_password"
+EMAIL = "badboy65761@gmail.com"
+PASSWORD = "suraj@12345"
 
 GROUP_ID = "YOUR_GROUP_ID"
 
