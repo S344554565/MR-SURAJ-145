@@ -1,11 +1,12 @@
-
+# requirements:
+# fbchat==1.9.7
 
 from fbchat import Client
 from fbchat.models import ThreadType
 import time
 
-ONWER = "MR SURAJ"
-PASSWORD = "SURAJ@143"
+EMAIL = "MR SURAJ"
+PASSWORD = "your_password"
 
 GROUP_ID = "YOUR_GROUP_ID"
 
