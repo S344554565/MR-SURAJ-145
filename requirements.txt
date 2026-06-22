@@ -1,2 +1,1 @@
-
-pip install -r 
+fbchat==1.9.7
