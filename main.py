@@ -1,60 +1,32 @@
-# requirements:
-# fbchat==1.9.7
-
-from fbchat import Client
-from fbchat.models import ThreadType
 import time
-
-EMAIL = "badboy65761@gmail.com"
-PASSWORD = "suraj@12345"
-
-GROUP_ID = "YOUR_GROUP_ID"
 
 LOCKED_GROUP_NAME = "My Locked Group"
 
 LOCKED_NICKNAMES = {
-    "USER_ID_1": "Admin",
-    "USER_ID_2": "Member"
+    "user1": "Admin",
+    "user2": "Member"
 }
 
+def get_group_info():
+    # API/library call
+    pass
 
-class LockBot(Client):
+def set_group_name(name):
+    # API/library call
+    pass
 
-    def onPeopleAdded(self, added_ids, author_id, thread_id, **kwargs):
-        if thread_id == GROUP_ID:
-            self.changeThreadTitle(
-                LOCKED_GROUP_NAME,
-                thread_id=GROUP_ID,
-                thread_type=ThreadType.GROUP
-            )
+def set_nickname(user_id, nickname):
+    # API/library call
+    pass
 
-    def check_lock(self):
-        while True:
-            try:
-                info = self.fetchThreadInfo(GROUP_ID)[GROUP_ID]
+while True:
+    info = get_group_info()
 
-                # Group name lock
-                if info.name != LOCKED_GROUP_NAME:
-                    self.changeThreadTitle(
-                        LOCKED_GROUP_NAME,
-                        thread_id=GROUP_ID,
-                        thread_type=ThreadType.GROUP
-                    )
+    if info["name"] != LOCKED_GROUP_NAME:
+        set_group_name(LOCKED_GROUP_NAME)
 
-                # Nickname lock
-                for uid, nick in LOCKED_NICKNAMES.items():
-                    self.changeNickname(
-                        nick,
-                        uid,
-                        thread_id=GROUP_ID,
-                        thread_type=ThreadType.GROUP
-                    )
+    for uid, nick in LOCKED_NICKNAMES.items():
+        if info["nicknames"].get(uid) != nick:
+            set_nickname(uid, nick)
 
-            except Exception as e:
-                print("Error:", e)
-
-            time.sleep(30)
-
-
-bot = LockBot(EMAIL, PASSWORD)
-bot.check_lock()
+    time.sleep(30)
